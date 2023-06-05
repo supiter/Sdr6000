@@ -24,7 +24,6 @@ struct SdrView: View {
   
   @AppStorage("openControlWindow") var openControlWindow = false
   @AppStorage("openLogWindow") var openLogWindow = false
-  @AppStorage("leftSideIsOpen") var leftSideIsOpen = false
   @AppStorage("rightSideIsOpen") var rightSideIsOpen = false
 
   @State private var leftWidth: CGFloat = 200
@@ -40,18 +39,8 @@ struct SdrView: View {
       PanafallsView(store: Store(initialState: PanafallsFeature.State(), reducer: PanafallsFeature()),
                     objectModel: objectModel)
       .toolbar{
-        ToolbarItem(placement: .navigation) {
-          Button {
-            leftSideIsOpen.toggle()
-          } label: {
-            Image(systemName: "sidebar.squares.left")
-              .font(.system(size: 20))
-          }
-          .keyboardShortcut("l", modifiers: [.control, .command])
-        }
-        
         ToolbarItem { Spacer() }
-        
+
         ToolbarItemGroup {
           Button(viewStore.isConnected ? "Disconnect" : "Connect") {
             viewStore.send(.ConnectDisconnect)
@@ -64,10 +53,10 @@ struct SdrView: View {
         
         ToolbarItemGroup {
           Button("Pan") { viewStore.send(.panadapterButton) }
+            .disabled(apiModel.radio == nil)
           Toggle("Tnfs", isOn: viewStore.binding( get: {_ in apiModel.radio?.tnfsEnabled ?? true }, send: .tnfButton))
             .disabled(apiModel.radio == nil)
-          
-          Toggle("Markers", isOn: viewStore.binding( get: \.rxAudio, send: .markerButton))
+          Toggle("Markers", isOn: viewStore.binding( get: \.markers, send: .markerButton))
             .disabled(true)
           Toggle("RxAudio", isOn: viewStore.binding( get: \.rxAudio, send: .rxAudioButton))
           Toggle("TxAudio", isOn: viewStore.binding( get: \.txAudio, send: .txAudioButton))

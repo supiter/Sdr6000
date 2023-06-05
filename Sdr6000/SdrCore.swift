@@ -69,19 +69,11 @@ public struct Sdr6000: ReducerProtocol {
   @AppStorage("clearOnStop") var clearOnStop = false
   @AppStorage("fontSize") var fontSize: Double = 12
   @AppStorage("isGui") var isGui = true
-  @AppStorage("localEnabled") var localEnabled = true
+  @AppStorage("localEnabled") var localEnabled = false
   @AppStorage("loginRequired") var loginRequired = false
-//  @AppStorage("rxAudio") var rxAudio = false
   @AppStorage("smartlinkEnabled") var smartlinkEnabled = false
   @AppStorage("smartlinkEmail") var smartlinkEmail = ""
-//  @AppStorage("txAudio") var txAudio = false
   @AppStorage("useDefault") var useDefault = false
-
-  
-  
-  
-  
-  
 
   @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
@@ -152,19 +144,8 @@ public struct Sdr6000: ReducerProtocol {
     case onAppear
     
     // UI controls
-//    case commandClear
-//    case commandNext
-//    case commandPrevious
-//    case commandSend
-//    case commandText(String)
     case ConnectDisconnect
-//    case fontSize(CGFloat)
-//    case gotoLast
     case loginRequired
-//    case messagesClear
-//    case messagesFilter(String)
-//    case messagesFilterText(String)
-//    case messagesSave
     case markerButton
     case panadapterButton
     case rxAudioButton
@@ -204,20 +185,12 @@ public struct Sdr6000: ReducerProtocol {
         // ----------------------------------------------------------------------------
         // MARK: - Actions: ApiView Initialization
         
-        
-
-        
       case .onAppear:
         // if the first time, start various effects
         if state.initialized == false {
           state.initialized = true
           // instantiate the Logger,
           _ = XCGWrapper(logLevel: .debug)
-          
-          
-          
-          localEnabled = true
-          
 
           if !smartlinkEnabled  && !localEnabled {
             state.alertState = AlertState(title: TextState("select LOCAL and/or SMARTLINK"))
@@ -362,7 +335,7 @@ public struct Sdr6000: ReducerProtocol {
         return initializeMode(state, listener, localEnabled, smartlinkEnabled, smartlinkEmail, loginRequired)
         
       case .markerButton:
-        print("---->>>>> Marker Button")
+        state.markers.toggle()
         return .none
         
      case .panadapterButton:

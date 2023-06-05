@@ -46,26 +46,26 @@ struct Sdr6000App: App {
   @Dependency(\.streamModel) var streamModel
 
   var body: some Scene {
-      
-      // Main window
+    
+    // Main window
     WindowGroup("Sdr6000  (v" + Version().string + ")") {
       SdrView(store: Store(initialState: Sdr6000.State(), reducer: Sdr6000()))
     }
     .windowToolbarStyle(.expanded)
-        
-
-
-      // Settings window
-      Settings {
-        SettingsView(store: Store(initialState: SettingsFeature.State(), reducer: SettingsFeature()), objectModel: objectModel, apiModel: apiModel)
-      }
-      .windowStyle(.hiddenTitleBar)
-      .windowResizability(WindowResizability.contentSize)
-      .defaultPosition(.bottomLeading)
-
-      .commands {
-        //remove the "New" menu item
-        CommandGroup(replacing: CommandGroupPlacement.newItem) {}
-      }
+    
+    
+    
+    // Settings window
+    Settings {
+      SettingsView(store: Store(initialState: SettingsFeature.State(), reducer: SettingsFeature()), objectModel: objectModel, apiModel: apiModel)
     }
+    .windowStyle(.hiddenTitleBar)
+    .windowResizability(WindowResizability.contentSize)
+    .defaultPosition(.bottomLeading)
+    
+    .commands {
+      //remove the "New" menu item
+      CommandGroup(replacing: CommandGroupPlacement.newItem) {}
+    }
+  }
 }
