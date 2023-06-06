@@ -145,12 +145,16 @@ public struct Sdr6000: ReducerProtocol {
     
     // UI controls
     case ConnectDisconnect
+//    case headphoneGain(Int)
+//    case headphoneMute
+//    case lineoutGain(Int)
+//    case lineoutMute
     case loginRequired
-    case markerButton
-    case panadapterButton
-    case rxAudioButton
-    case tnfButton
-    case txAudioButton
+//    case markerButton
+//    case panadapterButton
+//    case rxAudioButton
+//    case tnfButton
+//    case txAudioButton
     
     // Subview related
     case alertDismissed
@@ -246,134 +250,66 @@ public struct Sdr6000: ReducerProtocol {
           return .run {send in await send(.showPickerSheet) }
         }
         
-//      case .commandClear:
-//        state.commandToSend = ""
-//        state.commandsIndex = 0
-//        return .none
-        
-//      case .commandNext:
-//        if state.commandsIndex == state.commandsArray.count - 1{
-//          state.commandsIndex = 0
-//        } else {
-//          state.commandsIndex += 1
+//      case let .headphoneGain(intValue):
+//        return .run {_ in
+//          await apiModel.radio?.setProperty(.headphonegain, String(intValue))
 //        }
-//        state.commandToSend = state.commandsArray[state.commandsIndex]
-//        return .none
-        
-//      case .commandPrevious:
-//        if state.commandsIndex == 0 {
-//          state.commandsIndex = state.commandsArray.count - 1
-//        } else {
-//          state.commandsIndex -= 1
-//        }
-//        state.commandToSend = state.commandsArray[state.commandsIndex]
-//        return .none
-        
-//      case .commandSend:
-//        // update the command history
-//        if state.commandToSend != state.previousCommand { state.commandsArray.append(state.commandToSend) }
-//        state.previousCommand = state.commandToSend
-//        state.commandsIndex = state.commandsIndex + 1
 //
-//        if clearOnSend {
-//          state.commandToSend = ""
-//          state.commandsIndex = 0
+//      case .headphoneMute:
+//        return .none
+//        
+//      case let .lineoutGain(intValue):
+//        return .run {_ in
+//          await apiModel.radio?.setProperty(.lineoutgain, String(intValue))
 //        }
-//        return .fireAndForget { [state] in
-//          apiModel.sendTcp(state.commandToSend)
-//        }
-
-//      case let .commandText(text):
-//        state.commandToSend = text
+//        
+//      case .lineoutMute:
 //        return .none
         
-//      case let .fontSize(size):
-//        fontSize = size
-//        return .none
-        
-//      case .gotoLast:
-//        state.gotoLast.toggle()
-//        return .none
-        
-//      case .messagesClear:
-//        messagesModel.clearAll()
-//        return .none
-        
-//      case let .messagesFilter(filter):
-//        messagesModel.reFilter(filter: filter)
-//      return .none
-        
-//      case let .messagesFilterText(filterText):
-//        messagesModel.reFilter(filterText: filterText)
-//      return .none
-        
-//      case .messagesSave:
-//        let savePanel = NSSavePanel()
-//        savePanel.nameFieldStringValue = "Api6000.messages"
-//        savePanel.canCreateDirectories = true
-//        savePanel.isExtensionHidden = false
-//        savePanel.allowsOtherFileTypes = false
-//        savePanel.title = "Save the Log"
-//
-//        let response = savePanel.runModal()
-//        if response == .OK {
-//          return .fireAndForget {
-//            let formatter = NumberFormatter()
-//            formatter.minimumFractionDigits = 6
-//            formatter.positiveFormat = " * ##0.000000"
-//
-//            let textArray = messagesModel.filteredMessages.map { formatter.string(from: NSNumber(value: $0.interval))! + " " + $0.text }
-//            let fileTextArray = textArray.joined(separator: "\n")
-//            try? await fileTextArray.write(to: savePanel.url!, atomically: true, encoding: .utf8)
-//          }
-//        } else {
-//          return .none
-//        }
-
       case .loginRequired:
         loginRequired.toggle()
         return initializeMode(state, listener, localEnabled, smartlinkEnabled, smartlinkEmail, loginRequired)
         
-      case .markerButton:
-        state.markers.toggle()
-        return .none
-        
-     case .panadapterButton:
-        apiModel.requestPanadapter()
-        return .none
-        
-      case .rxAudioButton:
-        state.rxAudio.toggle()
-        if state.isConnected {
-          // CONNECTED, start / stop RxAudio
-          if state.rxAudio {
-            return startRxAudio(&state, apiModel, streamModel)
-          } else {
-            return stopRxAudio(&state, objectModel, streamModel)
-          }
-        } else {
-          // NOT CONNECTED
-          return .none
-        }
-        
-      case .tnfButton:
-        return .run {_ in
-          await apiModel.radio?.setProperty(.tnfsEnabled, (!apiModel.radio!.tnfsEnabled).as1or0)
-        }
-        
-      case .txAudioButton:
-        state.txAudio.toggle()
-        if state.isConnected {
-          // CONNECTED, start / stop TxAudio
-          if state.txAudio {
-            return startTxAudio(&state, objectModel, streamModel)
-          } else {
-            return stopTxAudio(&state, objectModel, streamModel)
-          }
-        } else {
-          // NOT CONNECTED
-          return .none
-        }
+//      case .markerButton:
+//        state.markers.toggle()
+//        return .none
+//        
+//     case .panadapterButton:
+//        apiModel.requestPanadapter()
+//        return .none
+//        
+//      case .rxAudioButton:
+//        state.rxAudio.toggle()
+//        if state.isConnected {
+//          // CONNECTED, start / stop RxAudio
+//          if state.rxAudio {
+//            return startRxAudio(&state, apiModel, streamModel)
+//          } else {
+//            return stopRxAudio(&state, objectModel, streamModel)
+//          }
+//        } else {
+//          // NOT CONNECTED
+//          return .none
+//        }
+//        
+//      case .tnfButton:
+//        return .run {_ in
+//          await apiModel.radio?.setProperty(.tnfsEnabled, (!apiModel.radio!.tnfsEnabled).as1or0)
+//        }
+//        
+//      case .txAudioButton:
+//        state.txAudio.toggle()
+//        if state.isConnected {
+//          // CONNECTED, start / stop TxAudio
+//          if state.txAudio {
+//            return startTxAudio(&state, objectModel, streamModel)
+//          } else {
+//            return stopTxAudio(&state, objectModel, streamModel)
+//          }
+//        } else {
+//          // NOT CONNECTED
+//          return .none
+//        }
         
         // ----------------------------------------------------------------------------
         // MARK: - Actions: invoked by other actions

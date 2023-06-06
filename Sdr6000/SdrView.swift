@@ -9,6 +9,7 @@ import ComposableArchitecture
 import SwiftUI
 
 import ClientDialog
+import FlexApi
 import LoginDialog
 import LogView
 import MessagesView
@@ -22,12 +23,8 @@ struct SdrView: View {
   
   @Environment(\.openWindow) var openWindow
   
-  @AppStorage("openControlWindow") var openControlWindow = false
-  @AppStorage("openLogWindow") var openLogWindow = false
-  @AppStorage("rightSideIsOpen") var rightSideIsOpen = false
-
-  @State private var leftWidth: CGFloat = 200
-  @State private var rightWidth: CGFloat = 100
+  @AppStorage("controlWindowIsOpen") var controlWindowIsOpen = false
+  @AppStorage("logWindowIsOpen") var logWindowIsOpen = false
   
   @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
@@ -39,49 +36,25 @@ struct SdrView: View {
       PanafallsView(store: Store(initialState: PanafallsFeature.State(), reducer: PanafallsFeature()),
                     objectModel: objectModel)
       .toolbar{
-        ToolbarItem { Spacer() }
-
-        ToolbarItemGroup {
+        ToolbarItem {
           Button(viewStore.isConnected ? "Disconnect" : "Connect") {
             viewStore.send(.ConnectDisconnect)
           }
           .disabled(viewStore.startStopDisabled)
           .keyboardShortcut(viewStore.isConnected ? .cancelAction : .defaultAction)
-        }
-        
-        ToolbarItem { Spacer() }
-        
-        ToolbarItemGroup {
-          Button("Pan") { viewStore.send(.panadapterButton) }
-            .disabled(apiModel.radio == nil)
-          Toggle("Tnfs", isOn: viewStore.binding( get: {_ in apiModel.radio?.tnfsEnabled ?? true }, send: .tnfButton))
-            .disabled(apiModel.radio == nil)
-          Toggle("Markers", isOn: viewStore.binding( get: \.markers, send: .markerButton))
-            .disabled(true)
-          Toggle("RxAudio", isOn: viewStore.binding( get: \.rxAudio, send: .rxAudioButton))
-          Toggle("TxAudio", isOn: viewStore.binding( get: \.txAudio, send: .txAudioButton))
-        }
-        
-        ToolbarItem { Spacer() }
-        
-        ToolbarItem {
-          Button {
-            rightSideIsOpen.toggle()
-          } label: {
-            Image(systemName: "sidebar.squares.right")
-              .font(.system(size: 20))
-          }
+          .padding(.leading, 100)
         }
       }
+        
       
       // ---------- Initialization ----------
       // initialize on first appearance
       .onAppear() {
-        if openLogWindow { openWindow(id: WindowType.log.rawValue) }
-        if openControlWindow { openWindow(id: WindowType.control.rawValue) }
+        if logWindowIsOpen { openWindow(id: WindowType.log.rawValue) }
+        if controlWindowIsOpen { openWindow(id: WindowType.controls.rawValue) }
         viewStore.send(.onAppear)
       }
-
+      
       // ---------- Sheet Management ----------
       // alert dialogs
       .alert(
@@ -129,39 +102,14 @@ struct SdrView: View {
       )
     }
   }
+  
+  private func closeWindow(_ id: String) {
+    for window in NSApp.windows where window.identifier?.rawValue == id {
+      window.close()
+    }
+  }
 }
 
-
-
-
-
-
-
-
-//        ToolbarItemGroup(placement: .principal) {
-//          Image(systemName: "speaker.wave.2.circle")
-//            .font(.system(size: 24, weight: .regular))
-//          Slider(value: .constant(50), in: 0...100, step: 1)
-//            .frame(width: 100)
-//          Image(systemName: "speaker.wave.2.circle")
-//            .font(.system(size: 24, weight: .regular))
-//          Slider(value: .constant(75), in: 0...100, step: 1)
-//            .frame(width: 100)
-//          Spacer()
-//          Button("Log View") {  }
-//
-//          Button {
-//            viewStore.send(.sidebarRightClicked)
-//          } label: {
-//            Image(systemName: "sidebar.right")
-//              .font(.system(size: 18, weight: .regular))
-//          }
-//          .keyboardShortcut("r", modifiers: [.control, .command])
-//          .disabled(!viewStore.isConnected)
-//        }
-//      }
-//    }
-//  }
 
 struct SdrView_Previews: PreviewProvider {
   static var previews: some View {

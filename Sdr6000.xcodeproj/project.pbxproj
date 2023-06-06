@@ -38,6 +38,13 @@
 		9F5797442A2BD01300E93D97 /* Panafall in Frameworks */ = {isa = PBXBuildFile; productRef = 9F5797432A2BD01300E93D97 /* Panafall */; };
 		9F5797462A2BD01300E93D97 /* Panafalls in Frameworks */ = {isa = PBXBuildFile; productRef = 9F5797452A2BD01300E93D97 /* Panafalls */; };
 		9F5797482A2BD01300E93D97 /* Waterfall in Frameworks */ = {isa = PBXBuildFile; productRef = 9F5797472A2BD01300E93D97 /* Waterfall */; };
+		9F57BF052A2E86A5004B7613 /* CwControls in Frameworks */ = {isa = PBXBuildFile; productRef = 9F57BF042A2E86A5004B7613 /* CwControls */; };
+		9F57BF072A2E86A5004B7613 /* EqControls in Frameworks */ = {isa = PBXBuildFile; productRef = 9F57BF062A2E86A5004B7613 /* EqControls */; };
+		9F57BF092A2E86A5004B7613 /* FlagControls in Frameworks */ = {isa = PBXBuildFile; productRef = 9F57BF082A2E86A5004B7613 /* FlagControls */; };
+		9F57BF0B2A2E86A5004B7613 /* Ph1Controls in Frameworks */ = {isa = PBXBuildFile; productRef = 9F57BF0A2A2E86A5004B7613 /* Ph1Controls */; };
+		9F57BF0D2A2E86A5004B7613 /* Ph2Controls in Frameworks */ = {isa = PBXBuildFile; productRef = 9F57BF0C2A2E86A5004B7613 /* Ph2Controls */; };
+		9F57BF0F2A2E86A5004B7613 /* SidePanel in Frameworks */ = {isa = PBXBuildFile; productRef = 9F57BF0E2A2E86A5004B7613 /* SidePanel */; };
+		9F57BF112A2E86A5004B7613 /* TxControls in Frameworks */ = {isa = PBXBuildFile; productRef = 9F57BF102A2E86A5004B7613 /* TxControls */; };
 		9F7146802A2C2DF9003A053A /* ClientDialog in Frameworks */ = {isa = PBXBuildFile; productRef = 9F71467F2A2C2DF9003A053A /* ClientDialog */; };
 		9F7146822A2C2DF9003A053A /* LogView in Frameworks */ = {isa = PBXBuildFile; productRef = 9F7146812A2C2DF9003A053A /* LogView */; };
 		9F7146842A2C2DF9003A053A /* LoginDialog in Frameworks */ = {isa = PBXBuildFile; productRef = 9F7146832A2C2DF9003A053A /* LoginDialog */; };
@@ -60,8 +67,8 @@
 		9F5797062A2B919800E93D97 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		9F5797082A2B919800E93D97 /* Sdr6000.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sdr6000.entitlements; sourceTree = "<group>"; };
 		9F5797112A2B924300E93D97 /* SdrCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SdrCore.swift; sourceTree = "<group>"; };
-		9F7146982A2C44B5003A053A /* PanafallFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PanafallFeatures; path = ../Packages/PanafallFeatures; sourceTree = "<group>"; };
-		9F7146992A2CC80A003A053A /* ApiFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ApiFeatures; path = ../Packages/ApiFeatures; sourceTree = "<group>"; };
+		9F57BF122A2EED49004B7613 /* ApiFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ApiFeatures; path = ../Packages/ApiFeatures; sourceTree = "<group>"; };
+		9F57BF132A2F8CCE004B7613 /* PanafallFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PanafallFeatures; path = ../Packages/PanafallFeatures; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,7 +87,11 @@
 				9F57971D2A2B948A00E93D97 /* Tcp in Frameworks */,
 				9F7146912A2C2E57003A053A /* OpusPlayer in Frameworks */,
 				9F7146822A2C2DF9003A053A /* LogView in Frameworks */,
+				9F57BF0D2A2E86A5004B7613 /* Ph2Controls in Frameworks */,
 				9F5797442A2BD01300E93D97 /* Panafall in Frameworks */,
+				9F57BF072A2E86A5004B7613 /* EqControls in Frameworks */,
+				9F57BF112A2E86A5004B7613 /* TxControls in Frameworks */,
+				9F57BF0F2A2E86A5004B7613 /* SidePanel in Frameworks */,
 				9F57971F2A2B948A00E93D97 /* Udp in Frameworks */,
 				9F7146952A2C2E57003A053A /* SecureStorage in Frameworks */,
 				9F5797402A2BD01200E93D97 /* DisplayPopover in Frameworks */,
@@ -90,6 +101,7 @@
 				9F57972C2A2BCCBC00E93D97 /* PhoneCwSettings in Frameworks */,
 				9F71468A2A2C2DF9003A053A /* ObjectsView in Frameworks */,
 				9F71468C2A2C2DF9003A053A /* RadioPicker in Frameworks */,
+				9F57BF052A2E86A5004B7613 /* CwControls in Frameworks */,
 				9F57973E2A2BD01200E93D97 /* DaxPopover in Frameworks */,
 				9F57971B2A2B948A00E93D97 /* Shared in Frameworks */,
 				9F71468F2A2C2E57003A053A /* OpusEncoder in Frameworks */,
@@ -97,12 +109,14 @@
 				9F57973A2A2BD01200E93D97 /* AntennaPopover in Frameworks */,
 				9F7146932A2C2E57003A053A /* RingBuffer in Frameworks */,
 				9F5797172A2B948A00E93D97 /* FlexErrors in Frameworks */,
+				9F57BF0B2A2E86A5004B7613 /* Ph1Controls in Frameworks */,
 				9F57972A2A2BCCBC00E93D97 /* OtherSettings in Frameworks */,
 				9F5797152A2B948A00E93D97 /* FlexApi in Frameworks */,
 				9F57972E2A2BCCBC00E93D97 /* ProfileSettings in Frameworks */,
 				9F5797482A2BD01300E93D97 /* Waterfall in Frameworks */,
 				9F5797192A2B948A00E93D97 /* Listener in Frameworks */,
 				9F7146802A2C2DF9003A053A /* ClientDialog in Frameworks */,
+				9F57BF092A2E86A5004B7613 /* FlagControls in Frameworks */,
 				9F5797322A2BCCBC00E93D97 /* SettingsPanel in Frameworks */,
 				9F5797342A2BCCBC00E93D97 /* TxSettings in Frameworks */,
 				9F5797102A2B920900E93D97 /* ComposableArchitecture in Frameworks */,
@@ -116,8 +130,8 @@
 		9F5796F32A2B919700E93D97 = {
 			isa = PBXGroup;
 			children = (
-				9F7146992A2CC80A003A053A /* ApiFeatures */,
-				9F7146982A2C44B5003A053A /* PanafallFeatures */,
+				9F57BF132A2F8CCE004B7613 /* PanafallFeatures */,
+				9F57BF122A2EED49004B7613 /* ApiFeatures */,
 				9F5796FE2A2B919700E93D97 /* Sdr6000 */,
 				9F5796FD2A2B919700E93D97 /* Products */,
 				9F5797372A2BCD0C00E93D97 /* Frameworks */,
@@ -215,6 +229,13 @@
 				9F7146922A2C2E57003A053A /* RingBuffer */,
 				9F7146942A2C2E57003A053A /* SecureStorage */,
 				9F7146962A2C2E57003A053A /* XCGWrapper */,
+				9F57BF042A2E86A5004B7613 /* CwControls */,
+				9F57BF062A2E86A5004B7613 /* EqControls */,
+				9F57BF082A2E86A5004B7613 /* FlagControls */,
+				9F57BF0A2A2E86A5004B7613 /* Ph1Controls */,
+				9F57BF0C2A2E86A5004B7613 /* Ph2Controls */,
+				9F57BF0E2A2E86A5004B7613 /* SidePanel */,
+				9F57BF102A2E86A5004B7613 /* TxControls */,
 			);
 			productName = Sdr6000;
 			productReference = 9F5796FC2A2B919700E93D97 /* Sdr6000.app */;
@@ -251,6 +272,7 @@
 				9F5797382A2BD01200E93D97 /* XCRemoteSwiftPackageReference "PanafallFeatures" */,
 				9F71467E2A2C2DF9003A053A /* XCRemoteSwiftPackageReference "ViewFeatures" */,
 				9F71468D2A2C2E57003A053A /* XCRemoteSwiftPackageReference "UtilityFeatures" */,
+				9F57BF032A2E86A5004B7613 /* XCRemoteSwiftPackageReference "SideControlFeatures" */,
 			);
 			productRefGroup = 9F5796FD2A2B919700E93D97 /* Products */;
 			projectDirPath = "";
@@ -419,7 +441,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.Sdr6000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -446,7 +468,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.Sdr6000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -505,6 +527,14 @@
 		9F5797382A2BD01200E93D97 /* XCRemoteSwiftPackageReference "PanafallFeatures" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/K3TZR/PanafallFeatures.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		9F57BF032A2E86A5004B7613 /* XCRemoteSwiftPackageReference "SideControlFeatures" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/K3TZR/SideControlFeatures.git";
 			requirement = {
 				branch = main;
 				kind = branch;
@@ -658,6 +688,41 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9F5797382A2BD01200E93D97 /* XCRemoteSwiftPackageReference "PanafallFeatures" */;
 			productName = Waterfall;
+		};
+		9F57BF042A2E86A5004B7613 /* CwControls */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9F57BF032A2E86A5004B7613 /* XCRemoteSwiftPackageReference "SideControlFeatures" */;
+			productName = CwControls;
+		};
+		9F57BF062A2E86A5004B7613 /* EqControls */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9F57BF032A2E86A5004B7613 /* XCRemoteSwiftPackageReference "SideControlFeatures" */;
+			productName = EqControls;
+		};
+		9F57BF082A2E86A5004B7613 /* FlagControls */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9F57BF032A2E86A5004B7613 /* XCRemoteSwiftPackageReference "SideControlFeatures" */;
+			productName = FlagControls;
+		};
+		9F57BF0A2A2E86A5004B7613 /* Ph1Controls */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9F57BF032A2E86A5004B7613 /* XCRemoteSwiftPackageReference "SideControlFeatures" */;
+			productName = Ph1Controls;
+		};
+		9F57BF0C2A2E86A5004B7613 /* Ph2Controls */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9F57BF032A2E86A5004B7613 /* XCRemoteSwiftPackageReference "SideControlFeatures" */;
+			productName = Ph2Controls;
+		};
+		9F57BF0E2A2E86A5004B7613 /* SidePanel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9F57BF032A2E86A5004B7613 /* XCRemoteSwiftPackageReference "SideControlFeatures" */;
+			productName = SidePanel;
+		};
+		9F57BF102A2E86A5004B7613 /* TxControls */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9F57BF032A2E86A5004B7613 /* XCRemoteSwiftPackageReference "SideControlFeatures" */;
+			productName = TxControls;
 		};
 		9F71467F2A2C2DF9003A053A /* ClientDialog */ = {
 			isa = XCSwiftPackageProductDependency;

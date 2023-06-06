@@ -9,12 +9,14 @@ import ComposableArchitecture
 import SwiftUI
 
 import FlexApi
+import LogView
 import SettingsPanel
+import SidePanel
 import Shared
 
 enum WindowType: String {
   case log = "Log"
-  case control = "Controls"
+  case controls = "Controls"
   case settings = "Settings"
 }
 
@@ -51,10 +53,25 @@ struct Sdr6000App: App {
     WindowGroup("Sdr6000  (v" + Version().string + ")") {
       SdrView(store: Store(initialState: Sdr6000.State(), reducer: Sdr6000()))
     }
-    .windowToolbarStyle(.expanded)
+    .windowToolbarStyle(.unified)
     
-    
-    
+    // Log window
+    Window(WindowType.log.rawValue, id: WindowType.log.rawValue) {
+      LogView(store: Store(initialState: LogFeature.State(), reducer: LogFeature()) )
+      .frame(minWidth: 975)
+    }
+    .windowStyle(.hiddenTitleBar)
+    .defaultPosition(.bottomTrailing)
+
+    // Controls window
+    Window(WindowType.controls.rawValue, id: WindowType.controls.rawValue) {
+      SideControlView(store: Store(initialState: SideControlFeature.State(), reducer: SideControlFeature()), apiModel: apiModel, objectModel: objectModel)
+      .frame(minHeight: 210)
+    }
+    .windowStyle(.hiddenTitleBar)
+    .windowResizability(WindowResizability.contentSize)
+    .defaultPosition(.topTrailing)
+            
     // Settings window
     Settings {
       SettingsView(store: Store(initialState: SettingsFeature.State(), reducer: SettingsFeature()), objectModel: objectModel, apiModel: apiModel)
