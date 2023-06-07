@@ -269,48 +269,7 @@ public struct Sdr6000: ReducerProtocol {
       case .loginRequired:
         loginRequired.toggle()
         return initializeMode(state, listener, localEnabled, smartlinkEnabled, smartlinkEmail, loginRequired)
-        
-//      case .markerButton:
-//        state.markers.toggle()
-//        return .none
-//        
-//     case .panadapterButton:
-//        apiModel.requestPanadapter()
-//        return .none
-//        
-//      case .rxAudioButton:
-//        state.rxAudio.toggle()
-//        if state.isConnected {
-//          // CONNECTED, start / stop RxAudio
-//          if state.rxAudio {
-//            return startRxAudio(&state, apiModel, streamModel)
-//          } else {
-//            return stopRxAudio(&state, objectModel, streamModel)
-//          }
-//        } else {
-//          // NOT CONNECTED
-//          return .none
-//        }
-//        
-//      case .tnfButton:
-//        return .run {_ in
-//          await apiModel.radio?.setProperty(.tnfsEnabled, (!apiModel.radio!.tnfsEnabled).as1or0)
-//        }
-//        
-//      case .txAudioButton:
-//        state.txAudio.toggle()
-//        if state.isConnected {
-//          // CONNECTED, start / stop TxAudio
-//          if state.txAudio {
-//            return startTxAudio(&state, objectModel, streamModel)
-//          } else {
-//            return stopTxAudio(&state, objectModel, streamModel)
-//          }
-//        } else {
-//          // NOT CONNECTED
-//          return .none
-//        }
-        
+                
         // ----------------------------------------------------------------------------
         // MARK: - Actions: invoked by other actions
         

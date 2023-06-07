@@ -36,7 +36,7 @@ struct SdrView: View {
       PanafallsView(store: Store(initialState: PanafallsFeature.State(), reducer: PanafallsFeature()),
                     objectModel: objectModel)
       .toolbar{
-        ToolbarItem {
+        ToolbarItem (placement: .navigation){
           Button(viewStore.isConnected ? "Disconnect" : "Connect") {
             viewStore.send(.ConnectDisconnect)
           }

@@ -67,8 +67,8 @@
 		9F5797062A2B919800E93D97 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		9F5797082A2B919800E93D97 /* Sdr6000.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sdr6000.entitlements; sourceTree = "<group>"; };
 		9F5797112A2B924300E93D97 /* SdrCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SdrCore.swift; sourceTree = "<group>"; };
-		9F57BF122A2EED49004B7613 /* ApiFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ApiFeatures; path = ../Packages/ApiFeatures; sourceTree = "<group>"; };
-		9F57BF132A2F8CCE004B7613 /* PanafallFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PanafallFeatures; path = ../Packages/PanafallFeatures; sourceTree = "<group>"; };
+		9F57BF142A30A26D004B7613 /* PanafallFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PanafallFeatures; path = ../Packages/PanafallFeatures; sourceTree = "<group>"; };
+		9F57BF162A30D6F8004B7613 /* ApiFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ApiFeatures; path = ../Packages/ApiFeatures; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,8 +130,8 @@
 		9F5796F32A2B919700E93D97 = {
 			isa = PBXGroup;
 			children = (
-				9F57BF132A2F8CCE004B7613 /* PanafallFeatures */,
-				9F57BF122A2EED49004B7613 /* ApiFeatures */,
+				9F57BF162A30D6F8004B7613 /* ApiFeatures */,
+				9F57BF142A30A26D004B7613 /* PanafallFeatures */,
 				9F5796FE2A2B919700E93D97 /* Sdr6000 */,
 				9F5796FD2A2B919700E93D97 /* Products */,
 				9F5797372A2BCD0C00E93D97 /* Frameworks */,
@@ -441,7 +441,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.Sdr6000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -468,7 +468,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = net.k3tzr.Sdr6000;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
