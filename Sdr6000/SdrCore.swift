@@ -247,24 +247,8 @@ public struct Sdr6000: ReducerProtocol {
             }
           }
           // default not in use, open the Picker
-          return .run {send in await send(.showPickerSheet) }
-        }
-        
-//      case let .headphoneGain(intValue):
-//        return .run {_ in
-//          await apiModel.radio?.setProperty(.headphonegain, String(intValue))
-//        }
-//
-//      case .headphoneMute:
-//        return .none
-//        
-//      case let .lineoutGain(intValue):
-//        return .run {_ in
-//          await apiModel.radio?.setProperty(.lineoutgain, String(intValue))
-//        }
-//        
-//      case .lineoutMute:
-//        return .none
+          return .run {send in await send(.showPickerSheet) }          
+       }
         
       case .loginRequired:
         loginRequired.toggle()
