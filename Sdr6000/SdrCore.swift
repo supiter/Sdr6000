@@ -61,12 +61,11 @@ public struct Sdr6000: ReducerProtocol {
   // ----------------------------------------------------------------------------
   // MARK: - Dependency decalarations
 
-  @Environment(\.openWindow) var openWindow
-  
   @AppStorage("alertOnError") var alertOnError = false
   @AppStorage("clearOnSend") var clearOnSend = false
   @AppStorage("clearOnStart") var clearOnStart = false
   @AppStorage("clearOnStop") var clearOnStop = false
+  @AppStorage("discoveryType") var discoveryType = DiscoveryType.broadcast.rawValue
   @AppStorage("fontSize") var fontSize: Double = 12
   @AppStorage("isGui") var isGui = true
   @AppStorage("localEnabled") var localEnabled = false
@@ -75,6 +74,8 @@ public struct Sdr6000: ReducerProtocol {
   @AppStorage("smartlinkEmail") var smartlinkEmail = ""
   @AppStorage("useDefault") var useDefault = false
 
+  @Environment(\.openWindow) var openWindow
+  
   @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
   @Dependency(\.listener) var listener
@@ -195,7 +196,7 @@ public struct Sdr6000: ReducerProtocol {
           state.initialized = true
           // instantiate the Logger,
           _ = XCGWrapper(logLevel: .debug)
-
+          
           if !smartlinkEnabled  && !localEnabled {
             state.alertState = AlertState(title: TextState("select LOCAL and/or SMARTLINK"))
           }
@@ -207,7 +208,7 @@ public struct Sdr6000: ReducerProtocol {
           )
         }
         return .none
-
+        
         // ----------------------------------------------------------------------------
         // MARK: - Actions: ApiView UI controls
         
@@ -218,7 +219,7 @@ public struct Sdr6000: ReducerProtocol {
           window.close()
         }
         return .none
-
+        
       case .ConnectDisconnect:
         state.startStopDisabled = true
         if state.isConnected {
@@ -232,6 +233,7 @@ public struct Sdr6000: ReducerProtocol {
         } else {
           // ----- START -----
           if clearOnStart { messagesModel.clearAll() }
+          
           // use the default?
           if UserDefaults.standard.bool(forKey: "useDefault") {
             // YES, use the Default
@@ -247,8 +249,8 @@ public struct Sdr6000: ReducerProtocol {
             }
           }
           // default not in use, open the Picker
-          return .run {send in await send(.showPickerSheet) }          
-       }
+          return .run {send in await send(.showPickerSheet) }
+        }
         
       case .loginRequired:
         loginRequired.toggle()
@@ -314,7 +316,17 @@ public struct Sdr6000: ReducerProtocol {
         return .none
         
       case .showPickerSheet:
-        state.pickerState = PickerFeature.State(defaultValue: isGui ? state.guiDefault : state.nonGuiDefault, isGui: isGui)
+        var pickables: IdentifiedArrayOf<Pickable>
+        if discoveryType == DiscoveryType.broadcast.rawValue {
+          if isGui {
+            pickables = listener.getPickableRadios()
+          } else {
+            pickables = listener.getPickableStations()
+          }
+        } else {
+            pickables = listener.getPickableRadios()
+        }
+        state.pickerState = PickerFeature.State(pickables: pickables, defaultValue: isGui ? state.guiDefault : state.nonGuiDefault, isGui: isGui)
         return .none
         
         // ----------------------------------------------------------------------------

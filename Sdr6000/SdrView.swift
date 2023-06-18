@@ -21,10 +21,9 @@ import Shared
 struct SdrView: View {
   let store: StoreOf<Sdr6000>
   
+  @AppStorage("discoveryType") var discoveryType = DiscoveryType.broadcast.rawValue
+
   @Environment(\.openWindow) var openWindow
-  
-  @AppStorage("controlWindowIsOpen") var controlWindowIsOpen = false
-  @AppStorage("logWindowIsOpen") var logWindowIsOpen = false
   
   @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
@@ -37,28 +36,27 @@ struct SdrView: View {
                     objectModel: objectModel)
       .toolbar{
         ToolbarItem (placement: .navigation){
-          Button(viewStore.isConnected ? "Disconnect" : "Connect") {
+          Button(viewStore.isConnected ? "Disconnect" : discoveryType == DiscoveryType.broadcast.rawValue ? "Connect" : "Direct Connect") {
             viewStore.send(.ConnectDisconnect)
           }
           .disabled(viewStore.startStopDisabled)
           .keyboardShortcut(viewStore.isConnected ? .cancelAction : .defaultAction)
           .padding(.leading, 100)
         }
+
       }
         
       
       // ---------- Initialization ----------
       // initialize on first appearance
       .onAppear() {
-        if logWindowIsOpen { openWindow(id: WindowType.log.rawValue) }
-        if controlWindowIsOpen { openWindow(id: WindowType.controls.rawValue) }
         viewStore.send(.onAppear)
       }
       
       // ---------- Sheet Management ----------
       // alert dialogs
       .alert(
-        self.store.scope(state: \.alertState),
+        self.store.scope(state: \.alertState, action: {_ in .alertDismissed}),
         dismiss: .alertDismissed
       )
       
@@ -100,16 +98,18 @@ struct SdrView: View {
           )
         }
       )
-    }
-  }
-  
-  private func closeWindow(_ id: String) {
-    for window in NSApp.windows where window.identifier?.rawValue == id {
-      window.close()
+      
+      .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { notification in
+        // observe openings of secondary windows
+        if let window = notification.object as? NSWindow {
+          if window.identifier?.rawValue  == "com_apple_SwiftUI_Settings_window" {
+            window.level = .floating
+          }
+        }
+      }
     }
   }
 }
-
 
 struct SdrView_Previews: PreviewProvider {
   static var previews: some View {
