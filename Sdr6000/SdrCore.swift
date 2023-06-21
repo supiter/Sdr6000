@@ -19,6 +19,13 @@ import RadioPicker
 import Shared
 import XCGWrapper
 
+
+public enum ConnectionStatus {
+  case disconnected
+  case inProcess
+  case connected
+}
+
 // ----------------------------------------------------------------------------
 // MARK: - Global Functions
 
@@ -60,12 +67,11 @@ public func setDefaultValue<T: Encodable>(_ key: String, _ value: T?) {
 public struct Sdr6000: ReducerProtocol {
   // ----------------------------------------------------------------------------
   // MARK: - Dependency decalarations
-
+  
   @AppStorage("alertOnError") var alertOnError = false
   @AppStorage("clearOnSend") var clearOnSend = false
   @AppStorage("clearOnStart") var clearOnStart = false
   @AppStorage("clearOnStop") var clearOnStop = false
-  @AppStorage("discoveryType") var discoveryType = DiscoveryType.broadcast.rawValue
   @AppStorage("fontSize") var fontSize: Double = 12
   @AppStorage("isGui") var isGui = true
   @AppStorage("localEnabled") var localEnabled = false
@@ -73,7 +79,7 @@ public struct Sdr6000: ReducerProtocol {
   @AppStorage("smartlinkEnabled") var smartlinkEnabled = false
   @AppStorage("smartlinkEmail") var smartlinkEmail = ""
   @AppStorage("useDefault") var useDefault = false
-
+  
   @Environment(\.openWindow) var openWindow
   
   @Dependency(\.apiModel) var apiModel
@@ -85,7 +91,7 @@ public struct Sdr6000: ReducerProtocol {
   
   // ----------------------------------------------------------------------------
   // MARK: - Module Initialization
-
+  
   public init() {}
   
   // ----------------------------------------------------------------------------
@@ -98,16 +104,17 @@ public struct Sdr6000: ReducerProtocol {
     var nonGuiDefault: DefaultValue? { didSet { setDefaultValue("nonGuiDefault", nonGuiDefault) } }
     var rxAudio: Bool = false { didSet {UserDefaults.standard.set(rxAudio, forKey: "rxAudio")} }
     var txAudio: Bool = false { didSet {UserDefaults.standard.set(txAudio, forKey: "txAudio")} }
-
+    
     // other state
     var commandToSend = ""
     var isClosing = false
     var gotoLast = false
     var initialized = false
-    var isConnected = false
+    
+    var connectionStatus: ConnectionStatus = .disconnected
+    
     var opusPlayer: OpusPlayer? = nil
     var pickables = IdentifiedArrayOf<Pickable>()
-    var startStopDisabled = false
     var station: String? = nil
     
     // subview state
@@ -119,10 +126,10 @@ public struct Sdr6000: ReducerProtocol {
     var previousCommand = ""
     var commandsIndex = 0
     var commandsArray = [""]
-        
+    
     // ----------------------------------------------------------------------------
     // MARK: - State Initialization
-
+    
     public init(
       guiDefault: DefaultValue? = getDefaultValue("guiDefault"),
       markers: Bool = UserDefaults.standard.bool(forKey: "markers"),
@@ -146,16 +153,16 @@ public struct Sdr6000: ReducerProtocol {
     
     // UI controls
     case ConnectDisconnect
-//    case headphoneGain(Int)
-//    case headphoneMute
-//    case lineoutGain(Int)
-//    case lineoutMute
+    //    case headphoneGain(Int)
+    //    case headphoneMute
+    //    case lineoutGain(Int)
+    //    case lineoutMute
     case loginRequired
-//    case markerButton
-//    case panadapterButton
-//    case rxAudioButton
-//    case tnfButton
-//    case txAudioButton
+    //    case markerButton
+    //    case panadapterButton
+    //    case rxAudioButton
+    //    case tnfButton
+    //    case txAudioButton
     
     // Subview related
     case alertDismissed
@@ -221,8 +228,8 @@ public struct Sdr6000: ReducerProtocol {
         return .none
         
       case .ConnectDisconnect:
-        state.startStopDisabled = true
-        if state.isConnected {
+        if state.connectionStatus != .disconnected {
+          state.connectionStatus = .inProcess
           // ----- STOP -----
           if clearOnStop { messagesModel.clearAll() }
           return .run { send in
@@ -230,8 +237,9 @@ public struct Sdr6000: ReducerProtocol {
             await send(.connectionStatus(false))
           }
           
-        } else {
+        } else if state.connectionStatus == .disconnected {
           // ----- START -----
+          state.connectionStatus = .inProcess
           if clearOnStart { messagesModel.clearAll() }
           
           // use the default?
@@ -251,11 +259,12 @@ public struct Sdr6000: ReducerProtocol {
           // default not in use, open the Picker
           return .run {send in await send(.showPickerSheet) }
         }
+        return .none
         
       case .loginRequired:
         loginRequired.toggle()
         return initializeMode(state, listener, localEnabled, smartlinkEnabled, smartlinkEmail, loginRequired)
-                
+        
         // ----------------------------------------------------------------------------
         // MARK: - Actions: invoked by other actions
         
@@ -269,8 +278,8 @@ public struct Sdr6000: ReducerProtocol {
             try await apiModel.connect(selection: selection,
                                        isGui: isGui,
                                        disconnectHandle: disconnectHandle,
-                                       stationName: "Tester",
-                                       programName: "Api6000Tester")
+                                       stationName: selection.station.isEmpty ? "MyStation" : selection.station,
+                                       programName: "Sdr6000")
             await send(.connectionStatus(true))
           } catch {
             // connection attempt failed
@@ -278,14 +287,13 @@ public struct Sdr6000: ReducerProtocol {
             await send(.connectionStatus(false))
           }
         }
-
+        
       case let .connectionStatus(connected):
-        state.isConnected = connected
-        state.startStopDisabled = false
-        if state.isConnected && isGui && state.rxAudio {
-          // Start RxAudio
-          return startRxAudio(&state, apiModel, streamModel)
-        }
+        if connected { state.connectionStatus = .connected } else { state.connectionStatus = .disconnected }
+//        if state.connectionStatus == .connected && isGui && state.rxAudio {
+//          // Start RxAudio
+//          return startRxAudio(&state, apiModel, streamModel)
+//        }
         return .none
         
       case let .loginStatus(success, user):
@@ -317,14 +325,10 @@ public struct Sdr6000: ReducerProtocol {
         
       case .showPickerSheet:
         var pickables: IdentifiedArrayOf<Pickable>
-        if discoveryType == DiscoveryType.broadcast.rawValue {
-          if isGui {
-            pickables = listener.getPickableRadios()
-          } else {
-            pickables = listener.getPickableStations()
-          }
+        if isGui {
+          pickables = listener.getPickableRadios()
         } else {
-            pickables = listener.getPickableRadios()
+          pickables = listener.getPickableStations()
         }
         state.pickerState = PickerFeature.State(pickables: pickables, defaultValue: isGui ? state.guiDefault : state.nonGuiDefault, isGui: isGui)
         return .none
@@ -358,7 +362,7 @@ public struct Sdr6000: ReducerProtocol {
             }
           }
         }
-
+        
       case let .showLogAlert(logEntry):
         if alertOnError {
           // a Warning or Error has been logged, exit any sheet states
@@ -370,7 +374,7 @@ public struct Sdr6000: ReducerProtocol {
                                    message: TextState(logEntry.msg))
         }
         return .none
-
+        
       case let .testResult(result):
         // a test result has been received
         state.pickerState?.testResult = result.success
@@ -406,7 +410,6 @@ public struct Sdr6000: ReducerProtocol {
         
       case .picker(.cancelButton):
         state.pickerState = nil
-        state.startStopDisabled = false
         return .none
         
       case let .picker(.connectButton(selection)):
@@ -440,7 +443,7 @@ public struct Sdr6000: ReducerProtocol {
         }
         state.pickerState!.defaultValue = isGui ? state.guiDefault : state.nonGuiDefault
         return .none
-
+        
       case let .picker(.testButton(selection)):
         state.pickerState?.testResult = false
         // send a Test request
@@ -448,7 +451,6 @@ public struct Sdr6000: ReducerProtocol {
         
       case .picker(_):
         // IGNORE ALL OTHER picker actions
-        state.startStopDisabled = false
         return .none
         
         // ----------------------------------------------------------------------------
@@ -470,6 +472,7 @@ public struct Sdr6000: ReducerProtocol {
         return .none
       }
     }
+    
     // ClientFeature logic
     .ifLet(\.clientState, action: /Action.client) {
       ClientFeature()
@@ -523,35 +526,35 @@ func initializeMode(_ state: Sdr6000.State, _ listener: Listener, _ localEnabled
   }
 }
 
-private func startRxAudio(_ state: inout Sdr6000.State, _ apiModel: ApiModel, _ streamModel: StreamModel) ->  EffectTask<Sdr6000.Action> {
-  if state.opusPlayer == nil {
-    // ----- START Rx AUDIO -----
-    state.opusPlayer = OpusPlayer()
-    // start audio
-    return .fireAndForget { [state] in
-      // request a stream
-      if let id = try await apiModel.requestRemoteRxAudioStream().streamId {
-        // finish audio setup
-        state.opusPlayer?.start(id: id)
-        streamModel.remoteRxAudioStreams[id: id]?.delegate = state.opusPlayer
-      }
-    }
-  }
-  return .none
-}
-
-private func stopRxAudio(_ state: inout Sdr6000.State, _ objectModel: ObjectModel, _ streamModel: StreamModel) ->  EffectTask<Sdr6000.Action> {
-  if state.opusPlayer != nil {
-    // ----- STOP Rx AUDIO -----
-    state.opusPlayer!.stop()
-    let id = state.opusPlayer!.id
-    state.opusPlayer = nil
-    return .run { _ in
-      await streamModel.sendRemoveStream(id)
-    }
-  }
-  return .none
-}
+//private func startRxAudio(_ state: inout Sdr6000.State, _ apiModel: ApiModel, _ streamModel: StreamModel) ->  EffectTask<Sdr6000.Action> {
+//  if state.opusPlayer == nil {
+//    // ----- START Rx AUDIO -----
+//    state.opusPlayer = OpusPlayer()
+//    // start audio
+//    return .fireAndForget { [state] in
+//      // request a stream
+//      if let id = try await apiModel.requestRemoteRxAudioStream().streamId {
+//        // finish audio setup
+//        state.opusPlayer?.start(id: id)
+//        streamModel.remoteRxAudioStreams[id: id]?.delegate = state.opusPlayer
+//      }
+//    }
+//  }
+//  return .none
+//}
+//
+//private func stopRxAudio(_ state: inout Sdr6000.State, _ objectModel: ObjectModel, _ streamModel: StreamModel) ->  EffectTask<Sdr6000.Action> {
+//  if state.opusPlayer != nil {
+//    // ----- STOP Rx AUDIO -----
+//    state.opusPlayer!.stop()
+//    let id = state.opusPlayer!.id
+//    state.opusPlayer = nil
+//    return .run { _ in
+//      await streamModel.sendRemoveStream(id)
+//    }
+//  }
+//  return .none
+//}
 
 private func startTxAudio(_ state: inout Sdr6000.State, _ objectModel: ObjectModel, _ streamModel: StreamModel) ->  EffectTask<Sdr6000.Action> {
   // FIXME:

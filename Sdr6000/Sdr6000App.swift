@@ -15,7 +15,7 @@ import SettingsPanel
 import SidePanel
 import Shared
 
-enum WindowType: String {
+public enum WindowType: String {
   case controls = "Controls"
   case log = "Log"
   case messages = "Messages"
@@ -63,7 +63,8 @@ struct Sdr6000App: App {
     }
     .windowStyle(.hiddenTitleBar)
     .defaultPosition(.bottomTrailing)
-    
+    .keyboardShortcut("l", modifiers: [.option, .command])
+
     // Controls window
     Window(WindowType.controls.rawValue, id: WindowType.controls.rawValue) {
       SideControlView(store: Store(initialState: SideControlFeature.State(), reducer: SideControlFeature()), apiModel: apiModel, objectModel: objectModel)
@@ -72,6 +73,7 @@ struct Sdr6000App: App {
     .windowStyle(.hiddenTitleBar)
     .windowResizability(WindowResizability.contentSize)
     .defaultPosition(.topTrailing)
+    .keyboardShortcut("c", modifiers: [.option, .command])
             
     // Settings window
     Settings {
@@ -81,14 +83,15 @@ struct Sdr6000App: App {
     .windowResizability(WindowResizability.contentSize)
     .defaultPosition(.bottomLeading)
     
-    // Log window
+    // Messages window
     Window(WindowType.messages.rawValue, id: WindowType.messages.rawValue) {
       MessagesView(store: Store(initialState: MessagesFeature.State(), reducer: MessagesFeature()), messagesModel: messagesModel )
       .frame(minWidth: 975)
     }
     .windowStyle(.hiddenTitleBar)
     .defaultPosition(.bottomTrailing)
-    
+    .keyboardShortcut("m", modifiers: [.option, .command])
+
     .commands {
       //remove the "New" menu item
       CommandGroup(replacing: CommandGroupPlacement.newItem) {}

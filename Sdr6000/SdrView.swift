@@ -21,10 +21,8 @@ import Shared
 struct SdrView: View {
   let store: StoreOf<Sdr6000>
   
-  @AppStorage("discoveryType") var discoveryType = DiscoveryType.broadcast.rawValue
-
   @Environment(\.openWindow) var openWindow
-  
+
   @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
   @Dependency(\.streamModel) var streamModel
@@ -36,17 +34,16 @@ struct SdrView: View {
                     objectModel: objectModel)
       .toolbar{
         ToolbarItem (placement: .navigation){
-          Button(viewStore.isConnected ? "Disconnect" : discoveryType == DiscoveryType.broadcast.rawValue ? "Connect" : "Direct Connect") {
+          Button(viewStore.connectionStatus == .connected ? "Disconnect" : "Connect") {
             viewStore.send(.ConnectDisconnect)
           }
-          .disabled(viewStore.startStopDisabled)
-          .keyboardShortcut(viewStore.isConnected ? .cancelAction : .defaultAction)
-          .padding(.leading, 100)
+          .frame(width: 100)
+          .disabled(viewStore.connectionStatus == .inProcess)
+//          .keyboardShortcut(viewStore.connectionStatus == .connected ? .cancelAction : .defaultAction)
+          .padding(.leading, 20)
         }
-
       }
         
-      
       // ---------- Initialization ----------
       // initialize on first appearance
       .onAppear() {
