@@ -172,7 +172,7 @@ public struct Sdr6000: ReducerProtocol {
     
     // Effects related
     case connect(Pickable, UInt32?)
-    case connectionStatus(Bool)
+    case connectionStatus(ConnectionStatus)
     case loginStatus(Bool, String)
     
     // Sheet related
@@ -211,6 +211,7 @@ public struct Sdr6000: ReducerProtocol {
           return .merge(
             subscribeToClients(listener),
             subscribeToLogAlerts(),
+            subscribeToTestResults(listener),
             initializeMode(state, listener, localEnabled, smartlinkEnabled, smartlinkEmail, loginRequired)
           )
         }
@@ -234,7 +235,7 @@ public struct Sdr6000: ReducerProtocol {
           if clearOnStop { messagesModel.clearAll() }
           return .run { send in
             await apiModel.disconnect()
-            await send(.connectionStatus(false))
+            await send(.connectionStatus(.disconnected))
           }
           
         } else if state.connectionStatus == .disconnected {
@@ -280,16 +281,16 @@ public struct Sdr6000: ReducerProtocol {
                                        disconnectHandle: disconnectHandle,
                                        stationName: selection.station.isEmpty ? "MyStation" : selection.station,
                                        programName: "Sdr6000")
-            await send(.connectionStatus(true))
+            await send(.connectionStatus(.connected))
           } catch {
             // connection attempt failed
             await send(.showErrorAlert( error as! ConnectionError ))
-            await send(.connectionStatus(false))
+            await send(.connectionStatus(.disconnected))
           }
         }
         
-      case let .connectionStatus(connected):
-        if connected { state.connectionStatus = .connected } else { state.connectionStatus = .disconnected }
+      case let .connectionStatus(status):
+        state.connectionStatus = status
 //        if state.connectionStatus == .connected && isGui && state.rxAudio {
 //          // Start RxAudio
 //          return startRxAudio(&state, apiModel, streamModel)
@@ -410,6 +411,7 @@ public struct Sdr6000: ReducerProtocol {
         
       case .picker(.cancelButton):
         state.pickerState = nil
+        state.connectionStatus = .disconnected
         return .none
         
       case let .picker(.connectButton(selection)):
@@ -458,6 +460,7 @@ public struct Sdr6000: ReducerProtocol {
         
       case .client(.cancelButton):
         state.clientState = nil
+        state.connectionStatus = .disconnected
         return .none
         
       case let .client(.connect(selection, disconnectHandle)):
@@ -616,3 +619,13 @@ private func subscribeToLogAlerts() ->  EffectTask<Sdr6000.Action>  {
     }
   }
 }
+
+private func subscribeToTestResults(_ listener: Listener) ->  EffectTask<Sdr6000.Action>  {
+  return .run { send in
+    for await result in listener.testStream {
+      // a Smartlink test result was received
+      await send(.testResult(result))
+    }
+  }
+}
+
