@@ -23,6 +23,9 @@ struct SdrView: View {
   
   @Environment(\.openWindow) var openWindow
 
+  @AppStorage("rxAudio") var rxAudio: Bool = false
+  @AppStorage("txAudio") var txAudio: Bool = false
+
   @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
   @Dependency(\.streamModel) var streamModel
@@ -33,7 +36,7 @@ struct SdrView: View {
       PanafallsView(store: Store(initialState: PanafallsFeature.State(), reducer: PanafallsFeature()),
                     objectModel: objectModel)
       .toolbar{
-        ToolbarItem (placement: .navigation){
+        ToolbarItem(placement: .navigation) {
           Button(viewStore.connectionStatus == .connected ? "Disconnect" : "Connect") {
             viewStore.send(.ConnectDisconnect)
           }
@@ -41,6 +44,13 @@ struct SdrView: View {
           .disabled(viewStore.connectionStatus == .inProcess)
 //          .keyboardShortcut(viewStore.connectionStatus == .connected ? .cancelAction : .defaultAction)
           .padding(.leading, 20)
+        }
+        ToolbarItem {
+          HStack {
+            Toggle("RxAudio", isOn: $rxAudio)
+            Toggle("TxAudio", isOn: $txAudio)
+          }
+          .toggleStyle(.button)
         }
       }
         
@@ -50,6 +60,12 @@ struct SdrView: View {
         viewStore.send(.onAppear)
       }
       
+      // start/stop RxAudio
+      .onChange(of: rxAudio) { viewStore.send(.rxAudio($0)) }
+
+      // start/stop TxAudio
+      .onChange(of: txAudio)  { viewStore.send(.txAudio($0)) }
+
       // ---------- Sheet Management ----------
       // alert dialogs
       .alert(
