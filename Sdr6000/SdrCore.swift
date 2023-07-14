@@ -36,7 +36,7 @@ public enum ConnectionStatus {
 /// - Returns:        a struct or nil
 public func getDefaultValue<T: Decodable>(_ key: String) -> T? {
   
-  if let data = UserDefaults.standard.object(forKey: key) as? Data {
+  if let data = DefaultValues.standardStore.object(forKey: key) as? Data {
     let decoder = JSONDecoder()
     if let value = try? decoder.decode(T.self, from: data) {
       return value
@@ -54,13 +54,13 @@ public func getDefaultValue<T: Decodable>(_ key: String) -> T? {
 public func setDefaultValue<T: Encodable>(_ key: String, _ value: T?) {
   
   if value == nil {
-    UserDefaults.standard.removeObject(forKey: key)
+    DefaultValues.standardStore.removeObject(forKey: key)
   } else {
     let encoder = JSONEncoder()
     if let encoded = try? encoder.encode(value) {
-      UserDefaults.standard.set(encoded, forKey: key)
+      DefaultValues.standardStore.set(encoded, forKey: key)
     } else {
-      UserDefaults.standard.removeObject(forKey: key)
+      DefaultValues.standardStore.removeObject(forKey: key)
     }
   }
 }
@@ -69,19 +69,21 @@ public struct Sdr6000: ReducerProtocol {
   // ----------------------------------------------------------------------------
   // MARK: - Dependency decalarations
   
-  @AppStorage("alertOnError") var alertOnError = false
-  @AppStorage("clearOnSend") var clearOnSend = false
-  @AppStorage("clearOnStart") var clearOnStart = false
-  @AppStorage("clearOnStop") var clearOnStop = false
-  @AppStorage("fontSize") var fontSize: Double = 12
-  @AppStorage("isGui") var isGui = true
-  @AppStorage("localEnabled") var localEnabled = false
-  @AppStorage("loginRequired") var loginRequired = false
-  @AppStorage("rxAudio") var rxAudio = false
-  @AppStorage("smartlinkEnabled") var smartlinkEnabled = false
-  @AppStorage("smartlinkEmail") var smartlinkEmail = ""
-  @AppStorage("txAudio") var txAudio = false
-  @AppStorage("useDefault") var useDefault = false
+  @AppStorage("alertOnError", store: DefaultValues.standardStore) var alertOnError = false
+  @AppStorage("clearOnSend", store: DefaultValues.standardStore) var clearOnSend = false
+  @AppStorage("clearOnStart", store: DefaultValues.standardStore) var clearOnStart = false
+  @AppStorage("clearOnStop", store: DefaultValues.standardStore) var clearOnStop = false
+  @AppStorage("directEnabled", store: DefaultValues.standardStore) var directEnabled = false
+  @AppStorage("fontSize", store: DefaultValues.standardStore) var fontSize: Double = 12
+  @AppStorage("isGui", store: DefaultValues.standardStore) var isGui = true
+  @AppStorage("localEnabled", store: DefaultValues.standardStore) var localEnabled = false
+  @AppStorage("loginRequired", store: DefaultValues.standardStore) var loginRequired = false
+  @AppStorage("markers", store: DefaultValues.standardStore) var markers = false
+  @AppStorage("rxAudioEnabled", store: DefaultValues.standardStore) var rxAudioEnabled = false
+  @AppStorage("smartlinkEnabled", store: DefaultValues.standardStore) var smartlinkEnabled = false
+  @AppStorage("smartlinkEmail", store: DefaultValues.standardStore) var smartlinkEmail = ""
+  @AppStorage("txAudioEnabled", store: DefaultValues.standardStore) var txAudioEnabled = false
+  @AppStorage("useDefault", store: DefaultValues.standardStore) var useDefault = false
   
   @Environment(\.openWindow) var openWindow
   
@@ -103,10 +105,13 @@ public struct Sdr6000: ReducerProtocol {
   public struct State: Equatable {
     // State held in User Defaults
     var guiDefault: DefaultValue? { didSet { setDefaultValue("guiDefault", guiDefault) } }
-    var markers: Bool = false { didSet {UserDefaults.standard.set(markers, forKey: "markers")} }
     var nonGuiDefault: DefaultValue? { didSet { setDefaultValue("nonGuiDefault", nonGuiDefault) } }
-//    var rxAudio: Bool = false { didSet {UserDefaults.standard.set(rxAudio, forKey: "rxAudio")} }
-//    var txAudio: Bool = false { didSet {UserDefaults.standard.set(txAudio, forKey: "txAudio")} }
+
+//    var directEnabled = false
+//    var localEnabled = false
+//    var smartlinkEnabled = false
+
+    
     
     // other state
     var commandToSend = ""
@@ -135,16 +140,11 @@ public struct Sdr6000: ReducerProtocol {
     
     public init(
       guiDefault: DefaultValue? = getDefaultValue("guiDefault"),
-      markers: Bool = UserDefaults.standard.bool(forKey: "markers"),
       nonGuiDefault: DefaultValue? = getDefaultValue("nonGuiDefault")
-//      rxAudio: Bool = UserDefaults.standard.bool(forKey: "rxAudio"),
-//      txAudio: Bool = UserDefaults.standard.bool(forKey: "txAudio")
     )
     {
       self.guiDefault = guiDefault
       self.nonGuiDefault = nonGuiDefault
-//      self.rxAudio = rxAudio
-//      self.txAudio = txAudio
     }
   }
   
@@ -157,9 +157,12 @@ public struct Sdr6000: ReducerProtocol {
     // UI controls
     case ConnectDisconnect
     case loginRequired
-    case rxAudio(Bool)
-    case txAudio(Bool)
-   
+    case directButton
+    case localButton
+    case smartlinkButton
+    case rxButton
+    case txButton
+    
     // Subview related
     case alertDismissed
     case client(ClientFeature.Action)
@@ -179,12 +182,12 @@ public struct Sdr6000: ReducerProtocol {
     case showPickerSheet
     
     // Subscription related
+    case packetEvent(PacketEvent)
     case clientEvent(ClientEvent)
     case testResult(TestResult)
   }
   
   public var body: some ReducerProtocol<State, Action> {
-    
     
     Reduce { state, action in
       // Parent logic
@@ -199,11 +202,12 @@ public struct Sdr6000: ReducerProtocol {
           // instantiate the Logger,
           _ = XCGWrapper(logLevel: .debug)
           
-          if !smartlinkEnabled  && !localEnabled {
-            state.alertState = AlertState(title: TextState("select LOCAL and/or SMARTLINK"))
+          if !smartlinkEnabled && !localEnabled && !directEnabled {
+            state.alertState = AlertState(title: TextState("Select a Connection Mode\n\n(Direct, Local or Smartlink)"))
           }
           // start subscriptions
           return .merge(
+            subscribeToPackets(listener.packetStream),
             subscribeToClients(listener.clientStream),
             subscribeToLogAlerts(),
             subscribeToTestResults(listener.testStream),
@@ -231,7 +235,7 @@ public struct Sdr6000: ReducerProtocol {
           if clearOnStart { messagesModel.clearAll() }
           
           // use the default?
-          if UserDefaults.standard.bool(forKey: "useDefault") {
+          if useDefault {
             // YES, use the Default
             return .run { [state] send in
               if let packet = listener.findPacket(for: state.guiDefault, state.nonGuiDefault, isGui) {
@@ -251,9 +255,43 @@ public struct Sdr6000: ReducerProtocol {
         
       case .loginRequired:
         loginRequired.toggle()
-        return initializeMode(state, listener, localEnabled, smartlinkEnabled, smartlinkEmail, loginRequired)
+//        return initializeMode(state, listener, localEnabled, smartlinkEnabled, smartlinkEmail, loginRequired)
+        return .none
         
-      case let .rxAudio(rxAudioEnabled):
+      case .directButton:
+        directEnabled.toggle()
+        print("directEnabled = \(directEnabled)")
+        return .none
+        
+      case .localButton:
+        localEnabled.toggle()
+        print("localEnabled = \(localEnabled)")
+        listener.localMode(localEnabled)
+        return .none
+        
+      case .smartlinkButton:
+        smartlinkEnabled.toggle()
+        print("smartlinkEnabled = \(smartlinkEnabled)")
+        return .run { send in
+          if await listener.smartlinkMode(smartlinkEnabled) {
+            if loginRequired && smartlinkEnabled {
+              // Smartlink login is required
+              await send(.showLoginSheet)
+            }
+          } else {
+            // Wan listener was required and failed to start
+            await send(.showLoginSheet)
+          }
+        }
+        
+
+//        return .run { send in
+//          // set the connection mode, start the Lan and/or Wan listener
+//          if await listener.setConnectionMode(localEnabled, smartlinkEnabled, smartlinkEmail) {
+//        }
+
+      case .rxButton:
+        rxAudioEnabled.toggle()
         if state.connectionStatus == .connected {
           if rxAudioEnabled {
             return startRxAudio(&state, apiModel, streamModel)
@@ -263,7 +301,8 @@ public struct Sdr6000: ReducerProtocol {
         }
         return .none
         
-      case let .txAudio(txAudioEnabled):
+      case .txButton:
+        txAudioEnabled.toggle()
         if state.connectionStatus == .connected {
           if txAudioEnabled {
             return startTxAudio(&state, apiModel, streamModel)
@@ -272,7 +311,7 @@ public struct Sdr6000: ReducerProtocol {
           }
         }
         return .none
-
+        
         // ----------------------------------------------------------------------------
         // MARK: - Actions: invoked by other actions
         
@@ -298,9 +337,9 @@ public struct Sdr6000: ReducerProtocol {
         
       case let .connectionStatus(connectionStatus):
         state.connectionStatus = connectionStatus
-        if state.connectionStatus == .connected && rxAudio {
+        if state.connectionStatus == .connected && rxAudioEnabled {
           return startRxAudio(&state, apiModel, streamModel)
-        } else if state.connectionStatus == .disconnected && rxAudio {
+        } else if state.connectionStatus == .disconnected && rxAudioEnabled {
           return stopRxAudio(&state, objectModel, streamModel)
         }
         return .none
@@ -381,6 +420,18 @@ public struct Sdr6000: ReducerProtocol {
           // alert the user
           state.alertState = .init(title: TextState("\(logEntry.level == .warning ? "A Warning" : "An Error") was logged:"),
                                    message: TextState(logEntry.msg))
+        }
+        return .none
+        
+      case .packetEvent(_):
+        if state.pickerState != nil {
+          var pickables: IdentifiedArrayOf<Pickable>
+          if isGui {
+            pickables = listener.getPickableRadios()
+          } else {
+            pickables = listener.getPickableStations()
+          }
+          state.pickerState = PickerFeature.State(pickables: pickables, defaultValue: isGui ? state.guiDefault : state.nonGuiDefault, isGui: isGui)
         }
         return .none
         
@@ -525,7 +576,7 @@ func initializeMode(_ state: Sdr6000.State, _ listener: Listener, _ localEnabled
   // start / stop listeners as appropriate for the Mode
   return .run { send in
     // set the connection mode, start the Lan and/or Wan listener
-    if await listener.setConnectionMode(localEnabled,  smartlinkEnabled, smartlinkEmail) {
+    if await listener.setConnectionMode(localEnabled, smartlinkEnabled, smartlinkEmail) {
       if loginRequired && smartlinkEnabled {
         // Smartlink login is required
         await send(.showLoginSheet)
@@ -578,6 +629,15 @@ private func stopTxAudio(_ state: inout Sdr6000.State, _ objectModel: ObjectMode
 
 // ----------------------------------------------------------------------------
 // MARK: - Subscription methods
+
+private func subscribeToPackets(_ stream: AsyncStream<PacketEvent>) ->  EffectTask<Sdr6000.Action> {
+  return .run { send in
+    for await event in stream {
+      // a guiClient has been added / updated or deleted
+      await send(.packetEvent(event))
+    }
+  }
+}
 
 private func subscribeToClients(_ stream: AsyncStream<ClientEvent>) ->  EffectTask<Sdr6000.Action> {
   return .run { send in

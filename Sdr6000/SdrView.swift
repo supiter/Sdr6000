@@ -23,8 +23,11 @@ struct SdrView: View {
   
   @Environment(\.openWindow) var openWindow
 
-  @AppStorage("rxAudio") var rxAudio: Bool = false
-  @AppStorage("txAudio") var txAudio: Bool = false
+  @AppStorage("directEnabled", store: DefaultValues.standardStore) var directEnabled: Bool = false
+  @AppStorage("localEnabled", store: DefaultValues.standardStore) var localEnabled: Bool = false
+  @AppStorage("smartlinkEnabled", store: DefaultValues.standardStore) var smartlinkEnabled: Bool = false
+  @AppStorage("rxAudioEnabled", store: DefaultValues.standardStore) var rxAudioEnabled: Bool = false
+  @AppStorage("txAudioEnabled", store: DefaultValues.standardStore) var txAudioEnabled: Bool = false
 
   @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
@@ -36,21 +39,35 @@ struct SdrView: View {
       PanafallsView(store: Store(initialState: PanafallsFeature.State(), reducer: PanafallsFeature()),
                     objectModel: objectModel)
       .toolbar{
+        
+        ToolbarItem(placement: .navigation) {
+          ControlGroup {
+            Toggle(isOn: viewStore.binding(get: {_ in directEnabled}, send: .directButton)) {
+              Text("Direct") }
+            Toggle(isOn: viewStore.binding(get: {_ in localEnabled}, send: .localButton)) {
+              Text("Local") }
+            Toggle(isOn: viewStore.binding(get: {_ in smartlinkEnabled}, send: .smartlinkButton)) {
+              Text("Smartlink") }
+          }
+          .controlGroupStyle(.navigation)
+          .disabled(viewStore.connectionStatus != .disconnected)
+        }
+        
         ToolbarItem(placement: .navigation) {
           Button(viewStore.connectionStatus == .connected ? "Disconnect" : "Connect") {
             viewStore.send(.ConnectDisconnect)
           }
           .frame(width: 100)
           .disabled(viewStore.connectionStatus == .inProcess)
-//          .keyboardShortcut(viewStore.connectionStatus == .connected ? .cancelAction : .defaultAction)
-          .padding(.leading, 20)
         }
+        
         ToolbarItem {
-          HStack {
-            Toggle("RxAudio", isOn: $rxAudio)
-            Toggle("TxAudio", isOn: $txAudio)
-          }
-          .toggleStyle(.button)
+          ControlGroup {
+            Toggle(isOn: viewStore.binding(get: {_ in rxAudioEnabled}, send: .rxButton)) {
+              Text("RxAudio") }
+            Toggle(isOn: viewStore.binding(get: {_ in txAudioEnabled}, send: .txButton)) {
+              Text("TxAudio") }
+          }.controlGroupStyle(.navigation)
         }
       }
         
@@ -60,12 +77,6 @@ struct SdrView: View {
         viewStore.send(.onAppear)
       }
       
-      // start/stop RxAudio
-      .onChange(of: rxAudio) { viewStore.send(.rxAudio($0)) }
-
-      // start/stop TxAudio
-      .onChange(of: txAudio)  { viewStore.send(.txAudio($0)) }
-
       // ---------- Sheet Management ----------
       // alert dialogs
       .alert(

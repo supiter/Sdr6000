@@ -58,7 +58,7 @@ struct Sdr6000App: App {
 
     // Log window
     Window(WindowType.log.rawValue, id: WindowType.log.rawValue) {
-      LogView(store: Store(initialState: LogFeature.State(), reducer: LogFeature()) )
+      LogView(store: Store(initialState: LogFeature.State(domain: "net.k3tzr", appName: "Sdr6000"), reducer: LogFeature()) )
       .frame(minWidth: 975)
     }
     .windowStyle(.hiddenTitleBar)
