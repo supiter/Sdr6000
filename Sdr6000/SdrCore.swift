@@ -36,7 +36,7 @@ public enum ConnectionStatus {
 /// - Returns:        a struct or nil
 public func getDefaultValue<T: Decodable>(_ key: String) -> T? {
   
-  if let data = DefaultValues.standardStore.object(forKey: key) as? Data {
+  if let data = DefaultValues.flexStore?.object(forKey: key) as? Data {
     let decoder = JSONDecoder()
     if let value = try? decoder.decode(T.self, from: data) {
       return value
@@ -54,13 +54,13 @@ public func getDefaultValue<T: Decodable>(_ key: String) -> T? {
 public func setDefaultValue<T: Encodable>(_ key: String, _ value: T?) {
   
   if value == nil {
-    DefaultValues.standardStore.removeObject(forKey: key)
+    DefaultValues.flexStore?.removeObject(forKey: key)
   } else {
     let encoder = JSONEncoder()
     if let encoded = try? encoder.encode(value) {
-      DefaultValues.standardStore.set(encoded, forKey: key)
+      DefaultValues.flexStore?.set(encoded, forKey: key)
     } else {
-      DefaultValues.standardStore.removeObject(forKey: key)
+      DefaultValues.flexStore?.removeObject(forKey: key)
     }
   }
 }
@@ -69,23 +69,21 @@ public struct Sdr6000: ReducerProtocol {
   // ----------------------------------------------------------------------------
   // MARK: - Dependency decalarations
   
-  @AppStorage("alertOnError", store: DefaultValues.standardStore) var alertOnError = false
-  @AppStorage("clearOnSend", store: DefaultValues.standardStore) var clearOnSend = false
-  @AppStorage("clearOnStart", store: DefaultValues.standardStore) var clearOnStart = false
-  @AppStorage("clearOnStop", store: DefaultValues.standardStore) var clearOnStop = false
-  @AppStorage("directEnabled", store: DefaultValues.standardStore) var directEnabled = false
-  @AppStorage("fontSize", store: DefaultValues.standardStore) var fontSize: Double = 12
-  @AppStorage("isGui", store: DefaultValues.standardStore) var isGui = true
-  @AppStorage("localEnabled", store: DefaultValues.standardStore) var localEnabled = false
-  @AppStorage("loginRequired", store: DefaultValues.standardStore) var loginRequired = false
-  @AppStorage("markers", store: DefaultValues.standardStore) var markers = false
-  @AppStorage("rxAudioEnabled", store: DefaultValues.standardStore) var rxAudioEnabled = false
-  @AppStorage("smartlinkEnabled", store: DefaultValues.standardStore) var smartlinkEnabled = false
-  @AppStorage("smartlinkEmail", store: DefaultValues.standardStore) var smartlinkEmail = ""
-  @AppStorage("txAudioEnabled", store: DefaultValues.standardStore) var txAudioEnabled = false
-  @AppStorage("useDefault", store: DefaultValues.standardStore) var useDefault = false
-  
-  @Environment(\.openWindow) var openWindow
+  @AppStorage("alertOnError", store: DefaultValues.flexStore) var alertOnError = false
+  @AppStorage("clearOnSend", store: DefaultValues.flexStore) var clearOnSend = false
+  @AppStorage("clearOnStart", store: DefaultValues.flexStore) var clearOnStart = false
+  @AppStorage("clearOnStop", store: DefaultValues.flexStore) var clearOnStop = false
+  @AppStorage("directEnabled", store: DefaultValues.flexStore) var directEnabled = false
+  @AppStorage("fontSize", store: DefaultValues.flexStore) var fontSize: Double = 12
+  @AppStorage("isGui", store: DefaultValues.flexStore) var isGui = true
+  @AppStorage("localEnabled", store: DefaultValues.flexStore) var localEnabled = false
+  @AppStorage("loginRequired", store: DefaultValues.flexStore) var loginRequired = false
+  @AppStorage("markers", store: DefaultValues.flexStore) var markers = false
+  @AppStorage("rxAudioEnabled", store: DefaultValues.flexStore) var rxAudioEnabled = false
+  @AppStorage("smartlinkEnabled", store: DefaultValues.flexStore) var smartlinkEnabled = false
+  @AppStorage("smartlinkEmail", store: DefaultValues.flexStore) var smartlinkEmail = ""
+  @AppStorage("txAudioEnabled", store: DefaultValues.flexStore) var txAudioEnabled = false
+  @AppStorage("useDefault", store: DefaultValues.flexStore) var useDefault = false
   
   @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
@@ -106,12 +104,6 @@ public struct Sdr6000: ReducerProtocol {
     // State held in User Defaults
     var guiDefault: DefaultValue? { didSet { setDefaultValue("guiDefault", guiDefault) } }
     var nonGuiDefault: DefaultValue? { didSet { setDefaultValue("nonGuiDefault", nonGuiDefault) } }
-
-//    var directEnabled = false
-//    var localEnabled = false
-//    var smartlinkEnabled = false
-
-    
     
     // other state
     var commandToSend = ""
@@ -200,7 +192,7 @@ public struct Sdr6000: ReducerProtocol {
         if state.initialized == false {
           state.initialized = true
           // instantiate the Logger,
-          _ = XCGWrapper(logLevel: .debug)
+          _ = XCGWrapper(logLevel: .debug, group: DefaultValues.flexSuite)
           
           if !smartlinkEnabled && !localEnabled && !directEnabled {
             state.alertState = AlertState(title: TextState("Select a Connection Mode\n\n(Direct, Local or Smartlink)"))

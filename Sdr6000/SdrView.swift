@@ -21,17 +21,17 @@ import Shared
 struct SdrView: View {
   let store: StoreOf<Sdr6000>
   
-  @Environment(\.openWindow) var openWindow
+//  @Environment(\.openWindow) var openWindow
 
-  @AppStorage("directEnabled", store: DefaultValues.standardStore) var directEnabled: Bool = false
-  @AppStorage("localEnabled", store: DefaultValues.standardStore) var localEnabled: Bool = false
-  @AppStorage("smartlinkEnabled", store: DefaultValues.standardStore) var smartlinkEnabled: Bool = false
-  @AppStorage("rxAudioEnabled", store: DefaultValues.standardStore) var rxAudioEnabled: Bool = false
-  @AppStorage("txAudioEnabled", store: DefaultValues.standardStore) var txAudioEnabled: Bool = false
+  @AppStorage("directEnabled", store: DefaultValues.flexStore) var directEnabled: Bool = false
+  @AppStorage("localEnabled", store: DefaultValues.flexStore) var localEnabled: Bool = false
+  @AppStorage("smartlinkEnabled", store: DefaultValues.flexStore) var smartlinkEnabled: Bool = false
+  @AppStorage("rxAudioEnabled", store: DefaultValues.flexStore) var rxAudioEnabled: Bool = false
+  @AppStorage("txAudioEnabled", store: DefaultValues.flexStore) var txAudioEnabled: Bool = false
 
-  @Dependency(\.apiModel) var apiModel
+//  @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
-  @Dependency(\.streamModel) var streamModel
+//  @Dependency(\.streamModel) var streamModel
   
   var body: some View {
     WithViewStore(self.store, observe: {$0} ) { viewStore in
