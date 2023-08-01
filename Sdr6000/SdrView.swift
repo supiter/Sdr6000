@@ -11,8 +11,8 @@ import SwiftUI
 import ClientDialog
 import FlexApi
 import LoginDialog
-import LogView
-import MessagesView
+//import LogView
+//import MessagesView
 import ObjectsView
 import Panafalls
 import RadioPicker
@@ -79,6 +79,12 @@ struct SdrView: View {
       
       // ---------- Sheet Management ----------
       // alert dialogs
+      
+      // FIXME: ????
+      
+//      Alert.init(state: \.alertState, action: .alertDismissed)
+      
+      
       .alert(
         self.store.scope(state: \.alertState, action: {_ in .alertDismissed}),
         dismiss: .alertDismissed

@@ -9,16 +9,15 @@ import ComposableArchitecture
 import SwiftUI
 
 import FlexApi
-import LogView
-import MessagesView
+//import LogView
+//import MessagesView
 import SettingsPanel
 import SidePanel
 import Shared
 
 public enum WindowType: String {
   case controls = "Controls"
-  case log = "Log"
-  case messages = "Messages"
+//  case messages = "Messages"
   case settings = "Settings"
 }
 
@@ -44,7 +43,7 @@ struct Sdr6000App: App {
   var appDelegate
 
   @Dependency(\.apiModel) var apiModel
-  @Dependency(\.messagesModel) var messagesModel
+//  @Dependency(\.messagesModel) var messagesModel
   @Dependency(\.objectModel) var objectModel
   @Dependency(\.streamModel) var streamModel
 
@@ -55,15 +54,6 @@ struct Sdr6000App: App {
       SdrView(store: Store(initialState: Sdr6000.State(), reducer: Sdr6000()))
     }
     .windowToolbarStyle(.unified)
-
-    // Log window
-    Window(WindowType.log.rawValue, id: WindowType.log.rawValue) {
-      LogView(store: Store(initialState: LogFeature.State(domain: "net.k3tzr", appName: "Sdr6000"), reducer: LogFeature()) )
-      .frame(minWidth: 975)
-    }
-    .windowStyle(.hiddenTitleBar)
-    .defaultPosition(.bottomTrailing)
-    .keyboardShortcut("l", modifiers: [.option, .command])
 
     // Controls window
     Window(WindowType.controls.rawValue, id: WindowType.controls.rawValue) {
@@ -83,14 +73,14 @@ struct Sdr6000App: App {
     .windowResizability(WindowResizability.contentSize)
     .defaultPosition(.bottomLeading)
     
-    // Messages window
-    Window(WindowType.messages.rawValue, id: WindowType.messages.rawValue) {
-      MessagesView(store: Store(initialState: MessagesFeature.State(), reducer: MessagesFeature()), messagesModel: messagesModel )
-      .frame(minWidth: 975)
-    }
-    .windowStyle(.hiddenTitleBar)
-    .defaultPosition(.bottomTrailing)
-    .keyboardShortcut("m", modifiers: [.option, .command])
+//    // Messages window
+//    Window(WindowType.messages.rawValue, id: WindowType.messages.rawValue) {
+//      MessagesView(store: Store(initialState: MessagesFeature.State(), reducer: MessagesFeature()), messagesModel: messagesModel )
+//      .frame(minWidth: 975)
+//    }
+//    .windowStyle(.hiddenTitleBar)
+//    .defaultPosition(.bottomTrailing)
+//    .keyboardShortcut("m", modifiers: [.option, .command])
 
     .commands {
       //remove the "New" menu item

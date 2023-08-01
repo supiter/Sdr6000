@@ -46,9 +46,7 @@
 		9F5797442A2BD01300E93D97 /* Panafall in Frameworks */ = {isa = PBXBuildFile; productRef = 9F5797432A2BD01300E93D97 /* Panafall */; };
 		9F5797462A2BD01300E93D97 /* Panafalls in Frameworks */ = {isa = PBXBuildFile; productRef = 9F5797452A2BD01300E93D97 /* Panafalls */; };
 		9F7146802A2C2DF9003A053A /* ClientDialog in Frameworks */ = {isa = PBXBuildFile; productRef = 9F71467F2A2C2DF9003A053A /* ClientDialog */; };
-		9F7146822A2C2DF9003A053A /* LogView in Frameworks */ = {isa = PBXBuildFile; productRef = 9F7146812A2C2DF9003A053A /* LogView */; };
 		9F7146842A2C2DF9003A053A /* LoginDialog in Frameworks */ = {isa = PBXBuildFile; productRef = 9F7146832A2C2DF9003A053A /* LoginDialog */; };
-		9F7146862A2C2DF9003A053A /* MessagesView in Frameworks */ = {isa = PBXBuildFile; productRef = 9F7146852A2C2DF9003A053A /* MessagesView */; };
 		9F7146882A2C2DF9003A053A /* MonitorControl in Frameworks */ = {isa = PBXBuildFile; productRef = 9F7146872A2C2DF9003A053A /* MonitorControl */; };
 		9F71468A2A2C2DF9003A053A /* ObjectsView in Frameworks */ = {isa = PBXBuildFile; productRef = 9F7146892A2C2DF9003A053A /* ObjectsView */; };
 		9F71468C2A2C2DF9003A053A /* RadioPicker in Frameworks */ = {isa = PBXBuildFile; productRef = 9F71468B2A2C2DF9003A053A /* RadioPicker */; };
@@ -65,7 +63,6 @@
 		9F30BDDB2A491BA100481A7D /* SettingsFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SettingsFeatures; path = ../Packages/SettingsFeatures; sourceTree = "<group>"; };
 		9F30BDDC2A491E0500481A7D /* SideControlFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SideControlFeatures; path = ../Packages/SideControlFeatures; sourceTree = "<group>"; };
 		9F4F48102A44851400447EDC /* ApiFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ApiFeatures; path = ../Packages/ApiFeatures; sourceTree = "<group>"; };
-		9F4F48112A44992100447EDC /* ViewFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ViewFeatures; path = ../Packages/ViewFeatures; sourceTree = "<group>"; };
 		9F4F48122A44A0A300447EDC /* PanafallFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PanafallFeatures; path = ../Packages/PanafallFeatures; sourceTree = "<group>"; };
 		9F4F482E2A460DF500447EDC /* UtilityFeatures */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UtilityFeatures; path = ../Packages/UtilityFeatures; sourceTree = "<group>"; };
 		9F5796FC2A2B919700E93D97 /* Sdr6000.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sdr6000.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -95,7 +92,6 @@
 				9F5797302A2BCCBC00E93D97 /* RadioSettings in Frameworks */,
 				9F57971D2A2B948A00E93D97 /* Tcp in Frameworks */,
 				9F7146912A2C2E57003A053A /* OpusPlayer in Frameworks */,
-				9F7146822A2C2DF9003A053A /* LogView in Frameworks */,
 				9F5797442A2BD01300E93D97 /* Panafall in Frameworks */,
 				9F30BDDA2A48E47500481A7D /* TxControls in Frameworks */,
 				9F57971F2A2B948A00E93D97 /* Udp in Frameworks */,
@@ -115,7 +111,6 @@
 				9F57973E2A2BD01200E93D97 /* DaxPopover in Frameworks */,
 				9F57971B2A2B948A00E93D97 /* Shared in Frameworks */,
 				9F71468F2A2C2E57003A053A /* OpusEncoder in Frameworks */,
-				9F7146862A2C2DF9003A053A /* MessagesView in Frameworks */,
 				9F57973A2A2BD01200E93D97 /* AntennaPopover in Frameworks */,
 				9F7146932A2C2E57003A053A /* RingBuffer in Frameworks */,
 				9F8B1C522A58647500E1D9F1 /* WaterfallMetal in Frameworks */,
@@ -143,7 +138,6 @@
 				9F30BDC92A48E3FD00481A7D /* FlagFeatures */,
 				9F4F482E2A460DF500447EDC /* UtilityFeatures */,
 				9F4F48122A44A0A300447EDC /* PanafallFeatures */,
-				9F4F48112A44992100447EDC /* ViewFeatures */,
 				9F4F48102A44851400447EDC /* ApiFeatures */,
 				9F5796FE2A2B919700E93D97 /* Sdr6000 */,
 				9F5796FD2A2B919700E93D97 /* Products */,
@@ -231,9 +225,7 @@
 				9F5797432A2BD01300E93D97 /* Panafall */,
 				9F5797452A2BD01300E93D97 /* Panafalls */,
 				9F71467F2A2C2DF9003A053A /* ClientDialog */,
-				9F7146812A2C2DF9003A053A /* LogView */,
 				9F7146832A2C2DF9003A053A /* LoginDialog */,
-				9F7146852A2C2DF9003A053A /* MessagesView */,
 				9F7146872A2C2DF9003A053A /* MonitorControl */,
 				9F7146892A2C2DF9003A053A /* ObjectsView */,
 				9F71468B2A2C2DF9003A053A /* RadioPicker */,
@@ -532,7 +524,7 @@
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.54.0;
+				minimumVersion = 0.57.0;
 			};
 		};
 		9F5797132A2B948A00E93D97 /* XCRemoteSwiftPackageReference "ApiFeatures" */ = {
@@ -746,20 +738,10 @@
 			package = 9F71467E2A2C2DF9003A053A /* XCRemoteSwiftPackageReference "ViewFeatures" */;
 			productName = ClientDialog;
 		};
-		9F7146812A2C2DF9003A053A /* LogView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9F71467E2A2C2DF9003A053A /* XCRemoteSwiftPackageReference "ViewFeatures" */;
-			productName = LogView;
-		};
 		9F7146832A2C2DF9003A053A /* LoginDialog */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 9F71467E2A2C2DF9003A053A /* XCRemoteSwiftPackageReference "ViewFeatures" */;
 			productName = LoginDialog;
-		};
-		9F7146852A2C2DF9003A053A /* MessagesView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9F71467E2A2C2DF9003A053A /* XCRemoteSwiftPackageReference "ViewFeatures" */;
-			productName = MessagesView;
 		};
 		9F7146872A2C2DF9003A053A /* MonitorControl */ = {
 			isa = XCSwiftPackageProductDependency;

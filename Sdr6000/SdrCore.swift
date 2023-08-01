@@ -12,8 +12,8 @@ import ClientDialog
 import FlexApi
 import Listener
 import LoginDialog
-import LogView
-import MessagesView
+//import LogView
+//import MessagesView
 import OpusPlayer
 import Panafalls
 import RadioPicker
@@ -88,7 +88,7 @@ public struct Sdr6000: ReducerProtocol {
   @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
   @Dependency(\.listener) var listener
-  @Dependency(\.messagesModel) var messagesModel
+//  @Dependency(\.messagesModel) var messagesModel
   //  @Dependency(\.opusPlayer) var opusPlayer
   @Dependency(\.streamModel) var streamModel
   
@@ -215,7 +215,7 @@ public struct Sdr6000: ReducerProtocol {
         if state.connectionStatus != .disconnected {
           state.connectionStatus = .inProcess
           // ----- STOP -----
-          if clearOnStop { messagesModel.clearAll() }
+//          if clearOnStop { messagesModel.clearAll() }
           return .run { send in
             await apiModel.disconnect()
             await send(.connectionStatus(.disconnected))
@@ -224,7 +224,7 @@ public struct Sdr6000: ReducerProtocol {
         } else if state.connectionStatus == .disconnected {
           // ----- START -----
           state.connectionStatus = .inProcess
-          if clearOnStart { messagesModel.clearAll() }
+//          if clearOnStart { messagesModel.clearAll() }
           
           // use the default?
           if useDefault {
@@ -310,7 +310,7 @@ public struct Sdr6000: ReducerProtocol {
       case let .connect(selection, disconnectHandle):
         state.clientState = nil
         return .run { send in
-          messagesModel.start()
+//          messagesModel.start()
           // attempt to connect to the selected Radio / Station
           do {
             // try to connect
@@ -500,7 +500,7 @@ public struct Sdr6000: ReducerProtocol {
       case let .picker(.testButton(selection)):
         state.pickerState?.testResult = false
         // send a Test request
-        return .fireAndForget { listener.sendWanTest(selection.packet.serial) }
+        return .run {_ in listener.sendWanTest(selection.packet.serial) }
         
       case .picker(_):
         // IGNORE ALL OTHER picker actions
