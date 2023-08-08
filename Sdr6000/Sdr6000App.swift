@@ -51,13 +51,13 @@ struct Sdr6000App: App {
     
     // Main window
     WindowGroup("Sdr6000  (v" + Version().string + ")") {
-      SdrView(store: Store(initialState: Sdr6000.State(), reducer: Sdr6000()))
+      SdrView(store: Store(initialState: Sdr6000.State()) { Sdr6000() })
     }
     .windowToolbarStyle(.unified)
 
     // Controls window
     Window(WindowType.controls.rawValue, id: WindowType.controls.rawValue) {
-      SideControlView(store: Store(initialState: SideControlFeature.State(), reducer: SideControlFeature()), apiModel: apiModel, objectModel: objectModel)
+      SideControlView(store: Store(initialState: SideControlFeature.State()) { SideControlFeature() }, apiModel: apiModel, objectModel: objectModel)
       .frame(minHeight: 210)
     }
     .windowStyle(.hiddenTitleBar)
@@ -67,7 +67,7 @@ struct Sdr6000App: App {
             
     // Settings window
     Settings {
-      SettingsView(store: Store(initialState: SettingsFeature.State(), reducer: SettingsFeature()), objectModel: objectModel, apiModel: apiModel)
+      SettingsView(store: Store(initialState: SettingsPanel.State()) { SettingsPanel() }, objectModel: objectModel, apiModel: apiModel)
     }
     .windowStyle(.hiddenTitleBar)
     .windowResizability(WindowResizability.contentSize)

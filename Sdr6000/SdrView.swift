@@ -11,9 +11,6 @@ import SwiftUI
 import ClientDialog
 import FlexApi
 import LoginDialog
-//import LogView
-//import MessagesView
-import ObjectsView
 import Panafalls
 import RadioPicker
 import Shared
@@ -36,7 +33,7 @@ struct SdrView: View {
   var body: some View {
     WithViewStore(self.store, observe: {$0} ) { viewStore in
       
-      PanafallsView(store: Store(initialState: PanafallsFeature.State(), reducer: PanafallsFeature()),
+      PanafallsView(store: Store(initialState: PanafallsFeature.State()) { PanafallsFeature() },
                     objectModel: objectModel)
       .toolbar{
         
@@ -85,11 +82,11 @@ struct SdrView: View {
 //      Alert.init(state: \.alertState, action: .alertDismissed)
       
       
-      .alert(
-        self.store.scope(state: \.alertState, action: {_ in .alertDismissed}),
-        dismiss: .alertDismissed
-      )
-      
+//      .alert(
+//        self.store.scope(state: \.alertState, action: {_ in .alertDismissed}),
+//        dismiss: .alertDismissed
+//      )
+//
       // Picker sheet
       .sheet(
         isPresented: viewStore.binding(
@@ -143,6 +140,6 @@ struct SdrView: View {
 
 struct SdrView_Previews: PreviewProvider {
   static var previews: some View {
-    SdrView( store: Store(initialState: Sdr6000.State(), reducer: Sdr6000()))
+    SdrView( store: Store(initialState: Sdr6000.State()) { Sdr6000() })
   }
 }
