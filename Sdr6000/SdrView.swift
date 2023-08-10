@@ -18,24 +18,28 @@ import Shared
 struct SdrView: View {
   let store: StoreOf<Sdr6000>
   
-//  @Environment(\.openWindow) var openWindow
-
-  @AppStorage("directEnabled", store: DefaultValues.flexStore) var directEnabled: Bool = false
-  @AppStorage("localEnabled", store: DefaultValues.flexStore) var localEnabled: Bool = false
-  @AppStorage("smartlinkEnabled", store: DefaultValues.flexStore) var smartlinkEnabled: Bool = false
-  @AppStorage("rxAudioEnabled", store: DefaultValues.flexStore) var rxAudioEnabled: Bool = false
-  @AppStorage("txAudioEnabled", store: DefaultValues.flexStore) var txAudioEnabled: Bool = false
-
-//  @Dependency(\.apiModel) var apiModel
   @Dependency(\.objectModel) var objectModel
-//  @Dependency(\.streamModel) var streamModel
-  
+
+  @AppStorage("directEnabled", store: DefaultValues.flexStore) var directEnabled = false
+  @AppStorage("localEnabled", store: DefaultValues.flexStore) var localEnabled = false
+  @AppStorage("rxAudioEnabled", store: DefaultValues.flexStore) var rxAudioEnabled = false
+  @AppStorage("smartlinkEnabled", store: DefaultValues.flexStore) var smartlinkEnabled = false
+  @AppStorage("txAudioEnabled", store: DefaultValues.flexStore) var txAudioEnabled = false
+
   var body: some View {
     WithViewStore(self.store, observe: {$0} ) { viewStore in
       
       PanafallsView(store: Store(initialState: PanafallsFeature.State()) { PanafallsFeature() },
                     objectModel: objectModel)
       .toolbar{
+        
+        ToolbarItem(placement: .navigation) {
+          Button(viewStore.connectionStatus == .connected ? "Disconnect" : "Connect") {
+            viewStore.send(.ConnectDisconnect)
+          }
+          .frame(width: 100)
+          .disabled(viewStore.connectionStatus == .inProcess)
+        }
         
         ToolbarItem(placement: .navigation) {
           ControlGroup {
@@ -47,15 +51,8 @@ struct SdrView: View {
               Text("Smartlink") }
           }
           .controlGroupStyle(.navigation)
+          .padding(.horizontal, 20)
           .disabled(viewStore.connectionStatus != .disconnected)
-        }
-        
-        ToolbarItem(placement: .navigation) {
-          Button(viewStore.connectionStatus == .connected ? "Disconnect" : "Connect") {
-            viewStore.send(.ConnectDisconnect)
-          }
-          .frame(width: 100)
-          .disabled(viewStore.connectionStatus == .inProcess)
         }
         
         ToolbarItem {
